@@ -19,14 +19,8 @@ public class Main {
 
                 while(true) {
                     clientSocket = serverSocket.accept();
-                    BufferedReader inputReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    String clientCommand;
-                    while((clientCommand = inputReader.readLine()) != null){
-                        if (clientCommand.equalsIgnoreCase("PING")){
-                        System.out.println("The input is " + clientCommand);
-                            sendResponse(clientSocket);
-                        }
-                    }
+                    Thread newThread = new Thread(new ClientHandler(clientSocket));
+                    newThread.start();
                 }
 
         } catch (IOException e) {
@@ -42,13 +36,4 @@ public class Main {
         }
     }
 
-    private static void sendResponse(Socket clientSocket){
-        try {
-            PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            out.print("+PONG\r\n");
-            out.flush();
-        } catch(IOException ex){
-            throw new RuntimeException("Caught error while sending data to client");
-        }
-    }
 }
