@@ -33,8 +33,16 @@ public class ClientHandler implements Runnable{
                 if (clientInput.startsWith("*")){
                     int numberOfItems = Integer.parseInt(clientInput.substring(1));
                     System.out.println("The number of items are " + numberOfItems);
-                    List<String> commands = new ArrayList<>(numberOfItems * 2); // here we are also considering the size of the command given before
 
+                    List<String> commands = new ArrayList<>(numberOfItems * 2); // here we are also considering the size of the command given before
+                    // for easy understanding the 0th pos = len of the command
+                    // 1st pos is the command - GET, SET, ECHO, PING...
+                    // 2nd pos is the length of the first input
+                    // 3rd pos is the key
+                    // 4th is the length of the value
+                    // 5th is value
+                    // 6th is command => PX
+                    // 7th is PX's value
                     for (int i = 0; i < numberOfItems * 2; i++){
                         commands.add(inputReader.readLine());
                         System.out.println("input of " + i + " item is " + commands.get(i));
