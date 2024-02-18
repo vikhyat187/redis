@@ -4,10 +4,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Main {
+    static ConcurrentHashMap<String, String> cache = new ConcurrentHashMap<>();
     public static void main(String[] args) {
-        // You can use print statements as follows for debugging, they'll be visible when running tests.
         System.out.println("Logs from your program will appear here!");
 
         ServerSocket serverSocket = null;
@@ -19,7 +22,7 @@ public class Main {
 
                 while(true) {
                     clientSocket = serverSocket.accept();
-                    Thread newThread = new Thread(new ClientHandler(clientSocket));
+                    Thread newThread = new Thread(new ClientHandler(clientSocket, cache));
                     newThread.start();
                 }
 

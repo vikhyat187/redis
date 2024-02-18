@@ -1,5 +1,7 @@
 import commands.Echo;
+import commands.Get;
 import commands.Ping;
+import commands.SetKey;
 import utils.Constants;
 
 import java.io.BufferedReader;
@@ -9,15 +11,16 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-
-import static utils.Constants.ECHO;
-import static utils.Constants.PING;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientHandler implements Runnable{
     private final Socket clientSocket;
+    private ConcurrentHashMap<String, String> cache;
 
-    public ClientHandler(Socket clientSocket){
+    public ClientHandler(Socket clientSocket,
+                         ConcurrentHashMap<String, String> cache){
         this.clientSocket = clientSocket;
+        this.cache = cache;
     }
     @Override
     public void run() {
@@ -38,10 +41,14 @@ public class ClientHandler implements Runnable{
                     }
 
                     switch(commands.get(1).toLowerCase()){
-                        case Constants.PING: sendResponse(new Ping().execute(""));
+                        case Constants.PING: sendResponse(new Ping().execute(commands, cache));
                                     break;
-                        case Constants.ECHO: sendResponse(new Echo().execute(commands.get(3))); //*2\r\n$4\r\necho\r\n$3\r\nhey\r\n
+                        case Constants.ECHO: sendResponse(new Echo().execute(commands, cache)); //*2\r\n$4\r\necho\r\n$3\r\nhey\r\n
                                      break;
+                        case Constants.GET: sendResponse(new Get().execute(commands, cache));
+                            break;
+                        case Constants.SET: sendResponse(new SetKey().execute(commands, cache));
+                            break;
                         default: sendResponse("Currently you have entered a not supported command, please wait for few days.");
                     }
 
