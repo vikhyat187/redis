@@ -1,8 +1,17 @@
+import commands.Echo;
+import commands.Ping;
+import utils.Constants;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
+
+import static utils.Constants.ECHO;
+import static utils.Constants.PING;
 
 public class ClientHandler implements Runnable{
     private final Socket clientSocket;
@@ -16,18 +25,36 @@ public class ClientHandler implements Runnable{
         PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true)){
             String clientInput;
             while((clientInput = inputReader.readLine()) != null){
-                if (clientInput.equalsIgnoreCase("PING")){
-                    sendResponse(clientSocket);
+                System.out.println("The client input is "+ clientInput);
+
+                if (clientInput.startsWith("*")){
+                    int numberOfItems = Integer.parseInt(clientInput.substring(1));
+                    System.out.println("The number of items are " + numberOfItems);
+                    List<String> commands = new ArrayList<>(numberOfItems * 2); // here we are also considering the size of the command given before
+
+                    for (int i = 0; i < numberOfItems * 2; i++){
+                        commands.add(inputReader.readLine());
+                        System.out.println("input of " + i + " item is " + commands.get(i));
+                    }
+
+                    switch(commands.get(1).toLowerCase()){
+                        case Constants.PING: sendResponse(new Ping().execute(""));
+                                    break;
+                        case Constants.ECHO: sendResponse(new Echo().execute(commands.get(3))); //*2\r\n$4\r\necho\r\n$3\r\nhey\r\n
+                                     break;
+                        default: sendResponse("Currently you have entered a not supported command, please wait for few days.");
+                    }
+
                 }
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-    private void sendResponse(Socket clientSocket){
+    private void sendResponse(String response){
         try {
             PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-            out.print("+PONG\r\n");
+            out.print(response);
             out.flush();
         } catch(IOException ex){
             throw new RuntimeException("Caught error while sending data to client");
