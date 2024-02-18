@@ -13,7 +13,9 @@ public class Main {
         ServerSocket serverSocket = null;
         Socket clientSocket = null;
         int port = 6379;
-        port = Integer.parseInt(args[1]);
+        if (args.length >= 1){
+            port = Integer.parseInt(args[1]);
+        }
 
         try {
             serverSocket = new ServerSocket(port);
