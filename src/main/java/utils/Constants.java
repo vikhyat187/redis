@@ -7,5 +7,6 @@ public class Constants {
     public static final String SET = "set";
     public static final String OUTPUT_OK = "OK";
     public static final String PX = "px";
+    public static final String INFO = "info";
 
 }

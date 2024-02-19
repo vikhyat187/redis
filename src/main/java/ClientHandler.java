@@ -1,8 +1,6 @@
-import commands.Echo;
-import commands.Get;
-import commands.Ping;
-import commands.SetKey;
+import commands.*;
 import utils.Constants;
+import utils.ResponseUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ClientHandler implements Runnable{
     private final Socket clientSocket;
     private ConcurrentHashMap<String, String> cache;
+    private static final String role = "master";
 
     public ClientHandler(Socket clientSocket,
                          ConcurrentHashMap<String, String> cache){
@@ -56,6 +55,13 @@ public class ClientHandler implements Runnable{
                         case Constants.GET: sendResponse(new Get().execute(commands, cache));
                             break;
                         case Constants.SET: sendResponse(new SetKey().execute(commands, cache));
+                            break;
+
+                        case Constants.INFO:
+                            if (commands.get(3).equalsIgnoreCase("replication")){
+                                String response = "role:" + this.role;
+                                sendResponse(ResponseUtils.bulk(response));
+                            }
                             break;
                         default: sendResponse("Currently you have entered a not supported command, please wait for few days.");
                     }
