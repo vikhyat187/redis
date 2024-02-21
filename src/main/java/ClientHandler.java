@@ -13,13 +13,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ClientHandler implements Runnable{
     private final Socket clientSocket;
-    private ConcurrentHashMap<String, String> cache;
-    private static final String role = "master";
-
+    private static ConcurrentHashMap<String, String> cache;
+    private String role;
+    private int port;
     public ClientHandler(Socket clientSocket,
-                         ConcurrentHashMap<String, String> cache){
+                         ConcurrentHashMap<String, String> cache,
+                         String role,
+                         int port){
         this.clientSocket = clientSocket;
         this.cache = cache;
+        this.port = port;
+        this.role = role;
     }
     @Override
     public void run() {
@@ -59,6 +63,7 @@ public class ClientHandler implements Runnable{
 
                         case Constants.INFO:
                             if (commands.get(3).equalsIgnoreCase("replication")){
+                                System.out.println("The role is " + this.role  +" port is " + this.port);
                                 String response = "role:" + this.role;
                                 sendResponse(ResponseUtils.bulk(response));
                             }

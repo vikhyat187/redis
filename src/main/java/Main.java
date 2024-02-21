@@ -12,31 +12,10 @@ public class Main {
 
         ServerSocket serverSocket = null;
         Socket clientSocket = null;
-        int port = 6379;
-        if (args.length >= 1){
-            port = Integer.parseInt(args[1]);
-        }
-
-        try {
-            serverSocket = new ServerSocket(port);
-            serverSocket.setReuseAddress(true);
-
-                while(true) {
-                    clientSocket = serverSocket.accept();
-                    Thread newThread = new Thread(new ClientHandler(clientSocket, cache));
-                    newThread.start();
-                }
-
-        } catch (IOException e) {
-            System.out.println("IOException: " + e.getMessage());
-        } finally {
-            try {
-                if (clientSocket != null) {
-                    clientSocket.close();
-                }
-            } catch (IOException e) {
-                System.out.println("IOException: " + e.getMessage());
-            }
+        if (args.length >= 1 && args[0].equalsIgnoreCase("--port")) {
+            Redis redis = new Redis(args);
+        } else {
+            Redis redis = new Redis();
         }
     }
 
